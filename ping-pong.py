@@ -7,7 +7,7 @@ pygame.init()
 clock = pygame.time.Clock()
 window = display.set_mode((700, 500))
 display.set_caption('Пинг-понг')
-background = transform.scale(image.load('.jpg'), (700, 500))
+background = transform.scale(image.load('фон.jpg'), (960, 750))
 
 
 x1 = 100
@@ -32,10 +32,7 @@ class GameSprite(sprite.Sprite):
 font.init()
 font1 = font.SysFont('Arial', 36)
 font2 = font.SysFont('Arial', 36) 
-mixer.init()
-mixer.music.load('space.ogg')
-money = mixer.Sound('fire.ogg')
-mixer.music.play()
+
 player_x = 100
 player_y = 400
 player_speed = 10
@@ -46,28 +43,13 @@ player2_x = 550
 player2_y = 400
 player2_speed = 0
 player3_y = 0
-win = font1.render('YOU WIN!!!!', True, (255, 215, 0))
-loss = font1.render('YOU LOSER!', False, (255, 215, 0))
-class Wall(sprite.Sprite):
-    def __init__(self, color1, color2, color3, wall_x, wall_y, wall_width, wall_height):
-        super().__init__()
-        self.color1 = color1
-        self.color2 = color2
-        self.color3 = color3
-        self.width = wall_width
-        self.height = wall_height
-        self.image = Surface((self.width, self.height))
-        self.image.fill((color1, color2, color3))
-        self.rect = self.image.get_rect()
-        self.rect.x = wall_x
-        self.rect.y = wall_y
-    def draw_wall(self):
-        window.blit(self.image, (self.rect.x, self.rect.y))
+win = font1.render('WIN!!!!', True, (255, 215, 0))
+loss = font1.render('LOSS!', False, (255, 215, 0))
 
 
-asteroids = sprite.Group()
-monsters = sprite.Group()
-bullets = sprite.Group()
+player1 = sprite.Group()
+player2 = sprite.Group()
+ball = sprite.Group()
 
 
 class Player(GameSprite):
@@ -75,3 +57,87 @@ class Player(GameSprite):
         if keys_pressed[K_LEFT] and self.rect.x > 5:
             self.rect.x -= speed
         if keys_pressed[K_RIGHT] and self.rect.x < 595:
+            self.rect.x += speed
+    def fire(self):
+        bullet = Bullet('bullet.png', self.rect.centerx, self.rect.top, -15, 15, 20)
+        bullets.add(bullet)
+lost = 0
+
+class Enemy(GameSprite):
+    def update(self):
+        self.rect.y += self.speed
+        if self.rect.y >= 450:
+           self.rect.y = 0
+           self.rect.x = randint(0, 600)
+           
+x1 = 100
+y1 = 350
+x2 = 200
+y2 = 350
+speed = 10
+game = True 
+
+
+
+
+
+player1 = Player('platform.png', player_x, player_y, player_speed, 65, 65 )
+player2 = Player('platform.png', 80, player1_y, randint(2, 3), 50, 50)
+ball = GameSprite('мячик1.png', randint(80, 600), player3_y, randint(1, 2), 50, 50)
+    
+win1 = 0
+
+while game:
+   
+        
+    for e in event.get():
+        if e.type == QUIT:
+            game = False
+        elif e.type == KEYDOWN:
+            if e.key == K_w:
+                player.fire()
+
+    if finich != True:
+        window.blit(background, (0,0))
+        keys_pressed = key.get_pressed()
+        player1.reset()
+        player2.reset()
+        
+        ball.reset()
+        ball.update()
+        player1.update()
+        player2.update()
+       
+        text_losts = font2.render('Пропущено: ' + str(lost), 1, (255, 255, 255))
+        window.blit(text_losts, (10, 20))   
+        win2 = font2.render('Счет: ' + str(win1), 1, (255, 255, 255))
+        window.blit(win2, (10, 50))
+
+
+    for e in event.get():
+        if e.type == QUIT:
+            game = False
+    keys_pressed = key.get_pressed()
+
+    if keys_pressed[K_LEFT] and x1 > 5:
+        x1 -= speed
+    if keys_pressed[K_RIGHT] and x1 < 595:
+        x1 += speed
+    if keys_pressed[K_UP] and y1 > 5:
+        y1 -= speed
+    if keys_pressed[K_DOWN] and y1 < 395:
+        y1 += speed
+    if keys_pressed[K_a] and x2 > 5:
+        x2 -= speed
+    if keys_pressed[K_d] and x2 < 595:
+        x2 += speed
+    if keys_pressed[K_w] and y2 > 5:
+        y2 -= speed
+    if keys_pressed[K_s] and y2 < 395:
+        y2 += speed
+
+
+    display.update()
+    clock.tick(60)
+
+
